@@ -1,4 +1,4 @@
-pub mod auth;
+pub mod token;
 
 use std::fs::{self, File};
 use std::io::{self, Cursor, Write};
@@ -11,7 +11,7 @@ use reqwest::{Request, Url};
 use serde_json::json;
 use zip::ZipArchive;
 
-use crate::client::auth::NAIAccessToken;
+use crate::client::token::NAIAccessToken;
 use crate::utils::config::ImageConfig;
 use crate::utils::constants::{
     NAI_IMG_GEN_ENDPOINT, NAI_LOGIN_ENDPOINT, NAI_ORIGIN, NAI_REFERER, USER_AGENT,
