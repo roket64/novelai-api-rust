@@ -12,7 +12,6 @@ use serde_json::json;
 use zip::ZipArchive;
 
 use crate::client::token::NAIAccessToken;
-use crate::utils::config::ImageConfig;
 use crate::utils::constants::{
     NAI_IMG_GEN_ENDPOINT, NAI_LOGIN_ENDPOINT, NAI_ORIGIN, NAI_REFERER, USER_AGENT,
 };
@@ -58,86 +57,88 @@ impl NAIClient {
         }
     }
 
-    pub async fn generate_image_from(self, cfg: ImageConfig) {
-        let url = Url::parse(NAI_IMG_GEN_ENDPOINT).unwrap();
+    pub async fn generate_image_from(self) {
+        todo!()
+        // let url = Url::parse(NAI_IMG_GEN_ENDPOINT).unwrap();
 
-        let request = self.clone().build_nai_request(url, cfg);
+        // let request = self.clone().build_nai_request(url, cfg);
 
-        let response = self.client.execute(request).await.unwrap();
+        // let response = self.client.execute(request).await.unwrap();
 
-        if response.status().is_success() {
-            // extract filename from response's content disposition
-            let content_dispositon = response
-                .headers()
-                .get(CONTENT_DISPOSITION)
-                .unwrap()
-                .to_str()
-                .unwrap();
+        // if response.status().is_success() {
+        //     // extract filename from response's content disposition
+        //     let content_dispositon = response
+        //         .headers()
+        //         .get(CONTENT_DISPOSITION)
+        //         .unwrap()
+        //         .to_str()
+        //         .unwrap();
 
-            let parse_fname = |s: &str| -> Option<String> {
-                for part in s.split(';') {
-                    if let Some(name) = part.trim().strip_prefix("filename=") {
-                        return Some(name.trim_matches('"').to_string());
-                    }
-                }
-                None
-            };
+        //     let parse_fname = |s: &str| -> Option<String> {
+        //         for part in s.split(';') {
+        //             if let Some(name) = part.trim().strip_prefix("filename=") {
+        //                 return Some(name.trim_matches('"').to_string());
+        //             }
+        //         }
+        //         None
+        //     };
 
-            let filename = parse_fname(content_dispositon).unwrap();
+        //     let filename = parse_fname(content_dispositon).unwrap();
 
-            // clear all existing files in output directory
-            for entry in fs::read_dir(IMAGE_OUTPUT_DIR).unwrap() {
-                fs::remove_file(entry.unwrap().path()).unwrap()
-            }
+        //     // clear all existing files in output directory
+        //     for entry in fs::read_dir(IMAGE_OUTPUT_DIR).unwrap() {
+        //         fs::remove_file(entry.unwrap().path()).unwrap()
+        //     }
 
-            let bytes = response.bytes().await.unwrap();
-            let cursor = Cursor::new(&bytes);
+        //     let bytes = response.bytes().await.unwrap();
+        //     let cursor = Cursor::new(&bytes);
 
-            // save zip file itself to the output directory
-            let zip_path = Path::new(IMAGE_OUTPUT_DIR).join(filename);
-            let mut zip = File::create(zip_path).unwrap();
-            zip.write_all(&bytes).unwrap();
+        //     // save zip file itself to the output directory
+        //     let zip_path = Path::new(IMAGE_OUTPUT_DIR).join(filename);
+        //     let mut zip = File::create(zip_path).unwrap();
+        //     zip.write_all(&bytes).unwrap();
 
-            // extract every entries in the zip file to output directory
-            debug!("Extracting images into output directory...");
-            let mut archive = ZipArchive::new(cursor).unwrap();
+        //     // extract every entries in the zip file to output directory
+        //     debug!("Extracting images into output directory...");
+        //     let mut archive = ZipArchive::new(cursor).unwrap();
 
-            for i in 0..archive.len() {
-                let mut file = archive.by_index(i).unwrap();
-                let output_path = Path::new(IMAGE_OUTPUT_DIR).join(file.name());
+        //     for i in 0..archive.len() {
+        //         let mut file = archive.by_index(i).unwrap();
+        //         let output_path = Path::new(IMAGE_OUTPUT_DIR).join(file.name());
 
-                let mut output_file = File::create(&output_path).unwrap();
-                io::copy(&mut file, &mut output_file).unwrap();
+        //         let mut output_file = File::create(&output_path).unwrap();
+        //         io::copy(&mut file, &mut output_file).unwrap();
 
-                debug!(
-                    "Successfully extracted file \"{}\" to \"{}\".",
-                    file.name(),
-                    output_path.to_str().unwrap()
-                );
-            }
-        } else {
-            use crate::schema::error::Error;
+        //         debug!(
+        //             "Successfully extracted file \"{}\" to \"{}\".",
+        //             file.name(),
+        //             output_path.to_str().unwrap()
+        //         );
+        //     }
+        // } else {
+        //     // use crate::schema::error::Error;
 
-            let error: Error = serde_json::from_slice(&response.bytes().await.unwrap()).unwrap();
-            // TODO: implement error handling logic
-            debug!("{:#?}", error);
-        }
+        //     // let error: Error = serde_json::from_slice(&response.bytes().await.unwrap()).unwrap();
+        //     // // TODO: implement error handling logic
+        //     // debug!("{:#?}", error);
+        // }
     }
 
-    fn build_nai_request(self, url: Url, cfg: ImageConfig) -> Request {
-        let request = self
-            .client
-            .post(url)
-            .bearer_auth(self.token)
-            .headers(self.header)
-            .json(&json!({
-                "input": cfg.prompt,
-                "model": cfg.model,
-                "action": cfg.action,
-                "parameters": cfg.parameters,
-            }))
-            .build()
-            .unwrap();
-        request
+    fn build_nai_request(self, url: Url) -> Request {
+        // let request = self
+        //     .client
+        //     .post(url)
+        //     .bearer_auth(self.token)
+        //     .headers(self.header)
+        //     .json(&json!({
+        //         "input": cfg.prompt,
+        //         "model": cfg.model,
+        //         "action": cfg.action,
+        //         "parameters": cfg.parameters,
+        //     }))
+        //     .build()
+        //     .unwrap();
+        // request
+        todo!()
     }
 }
