@@ -2,8 +2,6 @@ use std::fmt::Display;
 
 use serde::Serialize;
 
-use crate::utils::config::ImageConfig;
-
 pub trait NAIModel {
     fn name(self) -> &'static str;
 
@@ -12,13 +10,10 @@ pub trait NAIModel {
     fn is_v4(self) -> bool;
 
     fn is_inpainting(self) -> bool;
-
-    fn config(self) -> ImageConfig;
 }
 
 #[derive(Clone, Copy, Debug, Default, Serialize)]
 pub enum Model {
-    #[default]
     #[serde(rename = "nai-diffusion-3")]
     AnimeV3,
     #[serde(rename = "nai-diffusion-3-inpainting")]
@@ -32,11 +27,17 @@ pub enum Model {
     #[serde(rename = "nai-diffusion-4-curated-preview")]
     AnimeV4Curated,
     #[serde(rename = "nai-diffusion-4-full")]
+    #[default]
     AnimeV4,
     #[serde(rename = "nai-diffusion-4-curated-inpainting")]
     AnimeV4CuratedInpainting,
     #[serde(rename = "nai-diffusion-4-full-inpainting")]
     AnimeV4Inpainting,
+
+    #[serde(rename = "nai-diffusion-45-full")]
+    AnimeV4_5,
+    #[serde(rename = "nai-diffusion-45-curated")]
+    AnimeV4_5Curated
 }
 
 impl Model {
@@ -50,6 +51,8 @@ impl Model {
             Model::AnimeV4 => "nai-diffusion-4-full",
             Model::AnimeV4CuratedInpainting => "nai-diffusion-4-curated-inpainting",
             Model::AnimeV4Inpainting => "nai-diffusion-4-full-inpainting",
+            Model::AnimeV4_5 => "nai-diffusion-45-full",
+            Model::AnimeV4_5Curated => "nai-diffusion-45-curated",
         }
     }
 
@@ -95,9 +98,5 @@ impl NAIModel for Model {
             Model::AnimeV4Inpainting => true,
             _ => false,
         }
-    }
-
-    fn config(self) -> ImageConfig {
-        todo!()
     }
 }
