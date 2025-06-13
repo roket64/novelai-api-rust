@@ -26,8 +26,8 @@ pub enum Model {
 
     #[serde(rename = "nai-diffusion-4-curated-preview")]
     AnimeV4Curated,
-    #[serde(rename = "nai-diffusion-4-full")]
     #[default]
+    #[serde(rename = "nai-diffusion-4-full")]
     AnimeV4,
     #[serde(rename = "nai-diffusion-4-curated-inpainting")]
     AnimeV4CuratedInpainting,
