@@ -57,10 +57,6 @@ impl NAIClient {
         }
     }
 
-    pub async fn generate_image(self, _preset: ImagePreset) {
-        todo!()
-    }
-
     pub async fn send_request(self, preset: ImagePreset) -> Response {
         let request = self
             .client
@@ -78,7 +74,9 @@ impl NAIClient {
         self.client.execute(request).await.unwrap()
     }
 
-    pub async fn save_local(self, response: Response) {
+    pub async fn generate_image(self, preset: ImagePreset) {
+        let response = self.send_request(preset).await;
+
         let content_disposition = response
             .headers()
             .get(CONTENT_DISPOSITION)
