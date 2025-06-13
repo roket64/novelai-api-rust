@@ -3,7 +3,7 @@ mod preset {
     use log::debug;
     use serde_json::json;
 
-    use novelapi_lib::preset::{model::Model, *};
+    use novelai::preset::{model::Model, *};
 
     fn init_logger() {
         log4rs::init_file("log4rs.yml", Default::default()).unwrap();

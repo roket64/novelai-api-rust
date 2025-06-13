@@ -1,4 +1,4 @@
-use novelapi_lib::{
+use novelai::{
     client::NAIClient,
     preset::{uc_preset::UCPreset, ImagePresetBuilder, ParametersBuilder},
 };

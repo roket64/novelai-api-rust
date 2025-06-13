@@ -1,15 +1,11 @@
 #[cfg(test)]
 mod response {
     use log::debug;
+    use novelai::client::NAIClient;
+    use novelai::preset::{model::Model::AnimeV3, ImagePresetBuilder, ParametersBuilder};
 
     #[tokio::test]
     async fn debug_response_v3() {
-        use novelapi_lib::client::NAIClient;
-
-        use novelapi_lib::preset::model::Model::AnimeV3;
-        use novelapi_lib::preset::ImagePresetBuilder;
-        use novelapi_lib::preset::ParametersBuilder;
-
         log4rs::init_file("log4rs.yml", Default::default()).unwrap();
 
         let params = ParametersBuilder::new()
@@ -37,11 +33,6 @@ mod response {
 
     #[tokio::test]
     async fn debug_response_v4() {
-        use novelapi_lib::client::NAIClient;
-
-        use novelapi_lib::preset::ImagePresetBuilder;
-        use novelapi_lib::preset::ParametersBuilder;
-
         log4rs::init_file("log4rs.yml", Default::default()).unwrap();
 
         let preset = ImagePresetBuilder::new()
