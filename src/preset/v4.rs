@@ -1,13 +1,13 @@
 use serde::Serialize;
 
-#[derive(Debug, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 #[serde(rename = "caption")]
 pub struct Caption {
     pub base_caption: String,
     pub char_captions: Vec<String>,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 #[serde(rename = "v4_prompt")]
 pub struct Prompt {
     pub caption: Caption,
@@ -16,7 +16,7 @@ pub struct Prompt {
     pub legacy_uc: bool,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 #[serde(rename = "v4_negative_prompt")]
 pub struct NegativePrompt {
     pub caption: Caption,
