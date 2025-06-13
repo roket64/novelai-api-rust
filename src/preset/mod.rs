@@ -103,15 +103,12 @@ impl ImagePreset {
     pub fn from(model: Model) -> Self {
         match model {
             Model::AnimeV3 => todo!(),
-            Model::AnimeV3Inpainting => unimplemented!("unimplemented model"),
             Model::FurryV3 => todo!(),
-            Model::FurryV3Inpainting => unimplemented!("unimplemented model"),
             Model::AnimeV4Curated => todo!(),
             Model::AnimeV4 => todo!(),
-            Model::AnimeV4CuratedInpainting => unimplemented!("unimplemented model"),
-            Model::AnimeV4Inpainting => unimplemented!("unimplemented model"),
             Model::AnimeV4_5 => todo!(),
             Model::AnimeV4_5Curated => todo!(),
+            _ => unimplemented!("unimplemented model"),
         }
     }
 
@@ -132,15 +129,12 @@ impl ImagePresetBuilder {
     pub fn from(model: Model) -> Self {
         match model {
             Model::AnimeV3 => todo!(),
-            Model::AnimeV3Inpainting => unimplemented!("unimplemented model"),
             Model::FurryV3 => todo!(),
-            Model::FurryV3Inpainting => unimplemented!("unimplemented model"),
             Model::AnimeV4Curated => todo!(),
             Model::AnimeV4 => todo!(),
-            Model::AnimeV4CuratedInpainting => unimplemented!("unimplemented model"),
-            Model::AnimeV4Inpainting => unimplemented!("unimplemented model"),
             Model::AnimeV4_5 => todo!(),
             Model::AnimeV4_5Curated => todo!(),
+            _ => unimplemented!("unimplemented model"),
         }
     }
 
@@ -205,7 +199,8 @@ impl ImagePresetBuilder {
                     self.parameters.clone().negative_prompt.unwrap(),
                     V4_FULL_HEAVY,
                 );
-                self.parameters.v4_negative_prompt = Some(new_prompt);
+                self.parameters.v4_negative_prompt = Some(new_prompt.clone());
+                self.parameters.negative_prompt = Some(new_prompt.caption.base_caption);
             }
             // Light
             1 => {
@@ -215,7 +210,8 @@ impl ImagePresetBuilder {
                     self.parameters.clone().negative_prompt.unwrap(),
                     V4_FULL_LIGHT,
                 );
-                self.parameters.v4_negative_prompt = Some(new_prompt);
+                self.parameters.v4_negative_prompt = Some(new_prompt.clone());
+                self.parameters.negative_prompt = Some(new_prompt.caption.base_caption);
             }
             // FurryFocus
             2 => {
@@ -225,7 +221,8 @@ impl ImagePresetBuilder {
                     self.parameters.clone().negative_prompt.unwrap(),
                     V4_5_CURATED_HUMAN_FOCUS,
                 );
-                self.parameters.v4_negative_prompt = Some(new_prompt);
+                self.parameters.v4_negative_prompt = Some(new_prompt.clone());
+                self.parameters.negative_prompt = Some(new_prompt.caption.base_caption);
             }
             // HumanFocus
             3 => {
@@ -235,7 +232,8 @@ impl ImagePresetBuilder {
                     self.parameters.clone().negative_prompt.unwrap(),
                     V4_5_CURATED_HUMAN_FOCUS,
                 );
-                self.parameters.v4_negative_prompt = Some(new_prompt);
+                self.parameters.v4_negative_prompt = Some(new_prompt.clone());
+                self.parameters.negative_prompt = Some(new_prompt.caption.base_caption);
             }
             // None
             4 => {
