@@ -149,8 +149,6 @@ impl ImagePresetBuilder {
     }
 
     pub fn parameters(mut self, parameters: Parameters) -> Self {
-        // TODO: check if `quality_toggle` or `uc_preset` is set.
-        // if so, quality tags should be injected into prompt or negative prompts.
         self.parameters = parameters;
         self
     }
@@ -160,6 +158,7 @@ impl ImagePresetBuilder {
             let mut new_prompt = self.parameters.v4_prompt.clone().unwrap();
 
             match self.model {
+                // TODO: quality tags should be seperated
                 Model::AnimeV4Curated => {
                     new_prompt.caption.base_caption = format!(
                         "{}, very aesthetic, masterpiece, no text, -0.8::feet::, rating:general",
@@ -219,6 +218,7 @@ impl ImagePresetBuilder {
                 new_prompt.caption.base_caption = format!(
                     "{}{}",
                     self.parameters.clone().negative_prompt.unwrap(),
+                    // TODO: implement V4_5_CURATED_FURRY_FOCUS
                     V4_5_CURATED_HUMAN_FOCUS,
                 );
                 self.parameters.v4_negative_prompt = Some(new_prompt.clone());
