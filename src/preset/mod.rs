@@ -47,6 +47,7 @@ pub struct ImagePresetBuilder {
 
 #[derive(Debug, Serialize)]
 pub struct Parameters {
+    // this option will automatically converted to `uc`
     negative_prompt: Option<String>,
     n_samples: Option<u32>,
     sampler: Option<Sampler>,
@@ -55,7 +56,9 @@ pub struct Parameters {
     cfg_rescale: Option<f32>,
     seed: Option<u32>,
     noise_schedule: Option<Noise>,
+    // this option will ignored when actual request is sent
     #[serde(rename = "qualityToggle")]
+    // this option will ignored when actual request is sent
     quality_toggle: Option<bool>,
     #[serde(rename = "ucPreset")]
     uc_preset: Option<u32>,
@@ -118,7 +121,7 @@ impl ImagePreset {
 impl ImagePresetBuilder {
     pub fn new() -> Self {
         ImagePresetBuilder {
-            prompt: String::from(""),
+            prompt: Default::default(),
             model: Model::default(),
             parameters: Parameters::new(),
         }
@@ -146,12 +149,18 @@ impl ImagePresetBuilder {
         self
     }
 
+    pub fn model(mut self, model: Model) -> Self {
+        self.model = model;
+        self
+    }
+
     pub fn parameters(mut self, parameters: Parameters) -> Self {
         // TODO: check if `quality_toggle` or `uc_preset` is set.
         // if so, quality tags should be injected into prompt or negative prompts.
         self.parameters = parameters;
         self
     }
+
 
     pub fn build(self) -> ImagePreset {
         ImagePreset {
@@ -210,16 +219,6 @@ impl ParametersBuilder {
         self
     }
 
-    pub fn width(mut self, width: u32) -> Self {
-        self.width = Some(width);
-        self
-    }
-
-    pub fn height(mut self, height: u32) -> Self {
-        self.height = Some(height);
-        self
-    }
-
     pub fn n_samples(mut self, n_samples: u32) -> Self {
         self.n_samples = Some(n_samples);
         self
@@ -262,6 +261,31 @@ impl ParametersBuilder {
 
     pub fn uc_preset(mut self, uc_preset: UCPreset) -> Self {
         self.uc_preset = Some(uc_preset as u32);
+        self
+    }
+
+    pub fn v4_prompt(mut self, v4_prompt: Option<Prompt>) -> Self {
+        self.v4_prompt = v4_prompt;
+        self
+    }
+
+    pub fn v4_negative_prompt(mut self, v4_negative_prompt: Option<NegativePrompt>) -> Self {
+        self.v4_negative_prompt = v4_negative_prompt;
+        self
+    }
+
+    pub fn uncond_scale(mut self, uncond_scale: f32) -> Self {
+        self.uncond_scale = Some(uncond_scale);
+        self
+    }
+
+    pub fn width(mut self, width: u32) -> Self {
+        self.width = Some(width);
+        self
+    }
+
+    pub fn height(mut self, height: u32) -> Self {
+        self.height = Some(height);
         self
     }
 
