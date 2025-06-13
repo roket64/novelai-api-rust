@@ -45,7 +45,7 @@ pub struct ImagePresetBuilder {
     parameters: Parameters,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct Parameters {
     // this option will automatically converted to `uc`
     negative_prompt: Option<String>,
@@ -143,8 +143,6 @@ impl ImagePresetBuilder {
     }
 
     pub fn prompt(mut self, prompt: String) -> Self {
-        // TODO: if `quality_toggle` is set on true,
-        // prompt should inserted into BEFORE the current prompt.
         self.prompt = prompt;
         self
     }
@@ -161,8 +159,41 @@ impl ImagePresetBuilder {
         self
     }
 
+    pub fn build(mut self) -> ImagePreset {
+        if self.parameters.quality_toggle.unwrap() {
+            let mut new_prompt = self.parameters.v4_prompt.clone().unwrap();
 
-    pub fn build(self) -> ImagePreset {
+            match self.model {
+                Model::AnimeV4Curated => {
+                    new_prompt.caption.base_caption = format!(
+                        "{}, very aesthetic, masterpiece, no text, -0.8::feet::, rating:general",
+                        self.prompt
+                    );
+                    self.parameters.v4_prompt = Some(new_prompt);
+                }
+                Model::AnimeV4 => {
+                    new_prompt.caption.base_caption = format!(
+                        "{}, no text, best quality, very aesthetic, absurdres",
+                        self.prompt
+                    );
+                    self.parameters.v4_prompt = Some(new_prompt);
+                }
+                Model::AnimeV4_5Curated => {
+                    new_prompt.caption.base_caption = format!(
+                        "{}, very aesthetic, masterpiece, no text, -0.8::feet::, rating:general",
+                        self.prompt
+                    );
+                    self.parameters.v4_prompt = Some(new_prompt);
+                }
+                Model::AnimeV4_5 => {
+                    new_prompt.caption.base_caption =
+                        format!("{}, very aesthetic, masterpiece, no text", self.prompt);
+                    self.parameters.v4_prompt = Some(new_prompt);
+                }
+                _ => unimplemented!(),
+            }
+        }
+
         ImagePreset {
             prompt: self.prompt,
             model: self.model,
@@ -204,6 +235,29 @@ impl ParametersBuilder {
             controlnet_strength: Some(1.0f32),
             deliberate_euler_ancestral_bug: Some(false),
             prefer_brownian: Some(true),
+        }
+    }
+
+    pub fn from(other: Parameters) -> Self {
+        ParametersBuilder {
+            negative_prompt: other.negative_prompt,
+            n_samples: other.n_samples,
+            sampler: other.sampler,
+            steps: other.steps,
+            scale: other.scale,
+            cfg_rescale: other.cfg_rescale,
+            seed: other.seed,
+            noise_schedule: other.noise_schedule,
+            quality_toggle: other.quality_toggle,
+            uc_preset: other.uc_preset,
+            v4_prompt: other.v4_prompt,
+            v4_negative_prompt: other.v4_negative_prompt,
+            uncond_scale: other.uncond_scale,
+            width: other.width,
+            height: other.height,
+            controlnet_strength: other.controlnet_strength,
+            deliberate_euler_ancestral_bug: other.deliberate_euler_ancestral_bug,
+            prefer_brownian: other.prefer_brownian,
         }
     }
 
