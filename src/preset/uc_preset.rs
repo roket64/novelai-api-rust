@@ -62,7 +62,7 @@ pub const V1_FURRY_BAD_ANATOMY: &'static str =
 pub const V1_FURRY_LOW_QUALITY: &'static str = 
     "worst quality, low quality, what has science done, what, nightmare fuel, eldritch horror, where is your god now, why,";
 
-#[derive(Debug, Default, Serialize)]
+#[derive(Clone, Copy, Debug, Default, Serialize)]
 pub enum UCPreset {
     LowQualityBadAnatomy = 0,
     LowQuality = 1,
