@@ -1,17 +1,17 @@
 pub mod token;
 
-use std::fs::{self, File};
+use std::fs::File;
 use std::io::{self, Cursor, Write};
 use std::path::Path;
 
-use log::debug;
-use reqwest::header::CONTENT_DISPOSITION;
-use reqwest::{header::HeaderMap, Client};
-use reqwest::{Request, Url};
+use reqwest::header::{HeaderMap, CONTENT_DISPOSITION};
+use reqwest::{Client, Response, Url};
 use serde_json::json;
 use zip::ZipArchive;
 
-use crate::client::token::NAIAccessToken;
+use token::NAIAccessToken;
+
+use crate::preset::ImagePreset;
 use crate::utils::constants::{
     NAI_IMG_GEN_ENDPOINT, NAI_LOGIN_ENDPOINT, NAI_ORIGIN, NAI_REFERER, USER_AGENT,
 };
@@ -57,88 +57,66 @@ impl NAIClient {
         }
     }
 
-    pub async fn generate_image_from(self) {
+    pub async fn generate_image(self, _preset: ImagePreset) {
         todo!()
-        // let url = Url::parse(NAI_IMG_GEN_ENDPOINT).unwrap();
-
-        // let request = self.clone().build_nai_request(url, cfg);
-
-        // let response = self.client.execute(request).await.unwrap();
-
-        // if response.status().is_success() {
-        //     // extract filename from response's content disposition
-        //     let content_dispositon = response
-        //         .headers()
-        //         .get(CONTENT_DISPOSITION)
-        //         .unwrap()
-        //         .to_str()
-        //         .unwrap();
-
-        //     let parse_fname = |s: &str| -> Option<String> {
-        //         for part in s.split(';') {
-        //             if let Some(name) = part.trim().strip_prefix("filename=") {
-        //                 return Some(name.trim_matches('"').to_string());
-        //             }
-        //         }
-        //         None
-        //     };
-
-        //     let filename = parse_fname(content_dispositon).unwrap();
-
-        //     // clear all existing files in output directory
-        //     for entry in fs::read_dir(IMAGE_OUTPUT_DIR).unwrap() {
-        //         fs::remove_file(entry.unwrap().path()).unwrap()
-        //     }
-
-        //     let bytes = response.bytes().await.unwrap();
-        //     let cursor = Cursor::new(&bytes);
-
-        //     // save zip file itself to the output directory
-        //     let zip_path = Path::new(IMAGE_OUTPUT_DIR).join(filename);
-        //     let mut zip = File::create(zip_path).unwrap();
-        //     zip.write_all(&bytes).unwrap();
-
-        //     // extract every entries in the zip file to output directory
-        //     debug!("Extracting images into output directory...");
-        //     let mut archive = ZipArchive::new(cursor).unwrap();
-
-        //     for i in 0..archive.len() {
-        //         let mut file = archive.by_index(i).unwrap();
-        //         let output_path = Path::new(IMAGE_OUTPUT_DIR).join(file.name());
-
-        //         let mut output_file = File::create(&output_path).unwrap();
-        //         io::copy(&mut file, &mut output_file).unwrap();
-
-        //         debug!(
-        //             "Successfully extracted file \"{}\" to \"{}\".",
-        //             file.name(),
-        //             output_path.to_str().unwrap()
-        //         );
-        //     }
-        // } else {
-        //     // use crate::schema::error::Error;
-
-        //     // let error: Error = serde_json::from_slice(&response.bytes().await.unwrap()).unwrap();
-        //     // // TODO: implement error handling logic
-        //     // debug!("{:#?}", error);
-        // }
     }
 
-    fn build_nai_request(self, url: Url) -> Request {
-        // let request = self
-        //     .client
-        //     .post(url)
-        //     .bearer_auth(self.token)
-        //     .headers(self.header)
-        //     .json(&json!({
-        //         "input": cfg.prompt,
-        //         "model": cfg.model,
-        //         "action": cfg.action,
-        //         "parameters": cfg.parameters,
-        //     }))
-        //     .build()
-        //     .unwrap();
-        // request
-        todo!()
+    pub async fn send_request(self, preset: ImagePreset) -> Response {
+        let request = self
+            .client
+            .post(Url::parse(NAI_IMG_GEN_ENDPOINT).unwrap())
+            .bearer_auth(self.token)
+            .headers(self.header)
+            .json(&json!({
+                "input": preset.prompt,
+                "model": preset.model,
+                "parameters": preset.parameters,
+            }))
+            .build()
+            .unwrap();
+
+        self.client.execute(request).await.unwrap()
+    }
+
+    pub async fn save_local(self, response: Response) {
+        let content_disposition = response
+            .headers()
+            .get(CONTENT_DISPOSITION)
+            .unwrap()
+            .to_str()
+            .unwrap();
+
+        let parse_filename = |s: &str| -> Option<String> {
+            for part in s.split(';') {
+                if let Some(filename) = part.trim().strip_prefix("filename=") {
+                    return Some(filename.trim_matches('"').to_string());
+                }
+            }
+            None
+        };
+
+        let filename = parse_filename(content_disposition).unwrap();
+        let bytes = response.bytes().await.unwrap();
+        let cursor = Cursor::new(&bytes);
+
+        // save zip file itself to the output directory
+        let zip_path = Path::new(IMAGE_OUTPUT_DIR).join(filename);
+        let mut zip = File::create(zip_path).unwrap();
+        zip.write_all(&bytes).unwrap();
+
+        // clear output directory
+        // for entry in fs::read_dir(IMAGE_OUTPUT_DIR).unwrap() {
+        //     fs::remove_file(entry.unwrap().path()).unwrap();
+        // }
+
+        let mut archive = ZipArchive::new(cursor).unwrap();
+
+        for i in 0..archive.len() {
+            let mut file = archive.by_index(i).unwrap();
+            let output_path = Path::new(IMAGE_OUTPUT_DIR).join(file.name());
+
+            let mut output_file = File::create(&output_path).unwrap();
+            io::copy(&mut file, &mut output_file).unwrap();
+        }
     }
 }
