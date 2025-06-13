@@ -30,7 +30,7 @@ fn _impl_preset_v4_curated() -> ImagePreset {
     todo!()
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct ImagePreset {
     #[serde(rename = "input")]
     pub prompt: String,
