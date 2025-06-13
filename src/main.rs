@@ -1,4 +1,7 @@
-use novelapi_lib::{client::NAIClient, preset::ImagePresetBuilder};
+use novelapi_lib::{
+    client::NAIClient,
+    preset::{uc_preset::UCPreset, ImagePresetBuilder, ParametersBuilder},
+};
 
 pub async fn generate_image_v4_example() {
     dotenv::dotenv().ok();
@@ -8,8 +11,11 @@ pub async fn generate_image_v4_example() {
 
     let client = NAIClient::new(&username, &password).await;
 
+    let params = ParametersBuilder::new().uc_preset(UCPreset::Heavy).build();
+
     let preset = ImagePresetBuilder::new()
         .prompt(String::from("1girl"))
+        .parameters(params)
         .build();
 
     let _ = client.generate_image(preset).await;
