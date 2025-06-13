@@ -14,6 +14,8 @@ use sampler::Sampler;
 use uc_preset::UCPreset;
 use v4::*;
 
+use crate::preset::uc_preset::{V4_5_CURATED_HUMAN_FOCUS, V4_FULL_HEAVY, V4_FULL_LIGHT};
+
 fn _impl_preset_v3() -> ImagePreset {
     todo!()
 }
@@ -192,6 +194,54 @@ impl ImagePresetBuilder {
                 }
                 _ => unimplemented!(),
             }
+        }
+
+        match self.parameters.uc_preset.unwrap() {
+            // Heavy
+            0 => {
+                let mut new_prompt = self.parameters.v4_negative_prompt.clone().unwrap();
+                new_prompt.caption.base_caption = format!(
+                    "{}{}",
+                    self.parameters.clone().negative_prompt.unwrap(),
+                    V4_FULL_HEAVY,
+                );
+                self.parameters.v4_negative_prompt = Some(new_prompt);
+            }
+            // Light
+            1 => {
+                let mut new_prompt = self.parameters.v4_negative_prompt.clone().unwrap();
+                new_prompt.caption.base_caption = format!(
+                    "{}{}",
+                    self.parameters.clone().negative_prompt.unwrap(),
+                    V4_FULL_LIGHT,
+                );
+                self.parameters.v4_negative_prompt = Some(new_prompt);
+            }
+            // FurryFocus
+            2 => {
+                let mut new_prompt = self.parameters.v4_negative_prompt.clone().unwrap();
+                new_prompt.caption.base_caption = format!(
+                    "{}{}",
+                    self.parameters.clone().negative_prompt.unwrap(),
+                    V4_5_CURATED_HUMAN_FOCUS,
+                );
+                self.parameters.v4_negative_prompt = Some(new_prompt);
+            }
+            // HumanFocus
+            3 => {
+                let mut new_prompt = self.parameters.v4_negative_prompt.clone().unwrap();
+                new_prompt.caption.base_caption = format!(
+                    "{}{}",
+                    self.parameters.clone().negative_prompt.unwrap(),
+                    V4_5_CURATED_HUMAN_FOCUS,
+                );
+                self.parameters.v4_negative_prompt = Some(new_prompt);
+            }
+            // None
+            4 => {
+                // do nothing
+            }
+            _ => unreachable!(),
         }
 
         ImagePreset {
