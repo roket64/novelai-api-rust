@@ -64,11 +64,10 @@ pub const V1_FURRY_LOW_QUALITY: &'static str =
 
 #[derive(Clone, Copy, Debug, Default, Serialize)]
 pub enum UCPreset {
-    LowQualityBadAnatomy = 0,
-    LowQuality = 1,
-    BadAnatomy = 2,
     #[default]
-    None = 3,
-    Heavy = 4,
-    Light = 5,
+    Heavy = 0,
+    Light = 1,
+    FurryFocus = 2,
+    HumanFocus = 3,
+    None = 4,
 }
